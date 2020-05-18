@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  labels:
+    component: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: proxy
+  #strategy:
+  #  {{- .Values.proxy.deploymentStrategy | toYaml | trimSuffix "\n" | nindent 4 }}
+  template:
+    metadata:
+      labels:
+        component: proxy
+  #      {{- /* Changes here will cause the Deployment to restart the pods. */}}
+  #      {{- include "jupyterhub.matchLabels" . | nindent 8 }}
+  #      hub.jupyter.org/network-access-hub: "true"
+  #      hub.jupyter.org/network-access-singleuser: "true"
+  #      {{- if .Values.proxy.labels }}
+  #      {{- .Values.proxy.labels | toYaml | trimSuffix "\n" | nindent 8 }}
+  #      {{- end }}
+  #    annotations:
+        # This lets us autorestart when the secret changes!
+  #      checksum/hub-secret: {{ include (print $.Template.BasePath "/hub/secret.yaml") . | sha256sum }}
+  #      checksum/proxy-secret: {{ include (print $.Template.BasePath "/proxy/secret.yaml") . | sha256sum }}
+  #      {{- if .Values.proxy.annotations }}
+  #      {{- .Values.proxy.annotations | toYaml | trimSuffix "\n" | nindent 8 }}
+  #      {{- end }}
+    spec:
+      containers:
+        - name: chp
+          image: jupyterhub/configurable-http-proxy:4.2.1
+          command:
+            - configurable-http-proxy
+            - --ip=0.0.0.0
+            - --api-ip=0.0.0.0
+            - --api-port=8001
+            - --default-target=http://$(HUB_SERVICE_HOST):$(HUB_SERVICE_PORT)
+            - --error-target=http://$(HUB_SERVICE_HOST):$(HUB_SERVICE_PORT)/hub/error
+            - --port=8000
+            - --log-level=debug
+          # resources:
+          #   {{- .Values.proxy.chp.resources | toYaml | trimSuffix "\n" | nindent 12 }}
+          securityContext:
+            # Don't allow any process to execute as root inside the container
+            allowPrivilegeEscalation: false
+          env:
+            - name: CONFIGPROXY_AUTH_TOKEN
+              value: "f7a5ba56603e8f4e4f1a1eb85b551b9e70ff863f76cb5f56e72aa23f84e31b5c"
+          # {{- with .Values.proxy.chp.image.pullPolicy }}
+          # imagePullPolicy: {{ . }}
+          # {{- end }}
+          ports:
+            - containerPort: 8000
+              name: proxy-public
+            - containerPort: 8001
+              name: api
