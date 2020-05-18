@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hub
+  labels:
+    component: jupyter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: jupyter
+  template:
+    metadata:
+      labels:
+        component: jupyter
+    spec:
+      serviceAccountName: hub
+      containers:
+        - name: jupyter-hub
+          #image: kienmn97/jupyter-hub:1.1.0
+          image: kienmn97/jupyter-hub-spark-notebook:1.1.0
+          imagePullPolicy: Always
+          command: ["jupyterhub", "--config", "/srv/jupyterhub/jupyterhub_config.py"]
+          ports:
+            - containerPort: 8081
+          env:
+            - name: CONFIGPROXY_AUTH_TOKEN
+              value: "f7a5ba56603e8f4e4f1a1eb85b551b9e70ff863f76cb5f56e72aa23f84e31b5c"
+          volumeMounts:
+            #- mountPath: /etc/jupyterhub/config/
+            #  name: config
+            #- mountPath: /etc/jupyterhub/secret/
+            #  name: secret
+            #- mountPath: /svr/jupyterhub/
+            #  name: hub-db-dir
+          resources:
+            requests:
+              cpu: 100m
+      volumes:
+        #- name: config
+        #  configMap:
+        #    name: hub-config
+        #- name: secret
+        #  secret:
+        #    secretName: hub-secret
+        #- name: hub-db-dir
+        #  persistentVolumeClaim:
+        #    claimName: hub-db-dir
