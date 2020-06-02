@@ -153,6 +153,8 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 
 c.KubeSpawner.image = "jupyter/pyspark-notebook:latest"
 
+c.KubeSpawner.service_account = "hub"
+
 # if get_config('singleuser.imagePullSecret.enabled'):
 #     c.KubeSpawner.image_pull_secrets = 'singleuser-image-credentials'
 
