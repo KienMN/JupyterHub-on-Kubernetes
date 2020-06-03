@@ -27,22 +27,28 @@ spec:
             - name: CONFIGPROXY_AUTH_TOKEN
               value: "f7a5ba56603e8f4e4f1a1eb85b551b9e70ff863f76cb5f56e72aa23f84e31b5c"
           volumeMounts:
+            # - mountPath: /srv/jupyterhub/jupyterhub_config.py
+            #   subPath: jupyterhub_config.py
+            #   name: config
             #- mountPath: /etc/jupyterhub/config/
             #  name: config
             #- mountPath: /etc/jupyterhub/secret/
             #  name: secret
-            #- mountPath: /svr/jupyterhub/
-            #  name: hub-db-dir
+            - mountPath: /svr/jupyterhub/
+              name: hub-db-dir
           resources:
             requests:
               cpu: 100m
       volumes:
+        # - name: config
+        #   configMap:
+        #     name: hub-config
         #- name: config
         #  configMap:
         #    name: hub-config
         #- name: secret
         #  secret:
         #    secretName: hub-secret
-        #- name: hub-db-dir
-        #  persistentVolumeClaim:
-        #    claimName: hub-db-dir
+        - name: hub-db-dir
+          persistentVolumeClaim:
+            claimName: hub-db-dir

@@ -250,6 +250,32 @@ c.KubeSpawner.service_account = "hub"
 # c.KubeSpawner.volumes.extend(get_config('singleuser.storage.extraVolumes', []))
 # c.KubeSpawner.volume_mounts.extend(get_config('singleuser.storage.extraVolumeMounts', []))
 
+# Mount volume for storage
+pvc_name_template = 'claim-{username}'
+c.KubeSpawner.pvc_name_template = pvc_name_template
+volume_name_template = 'volume-{username}'
+
+c.KubeSpawner.storage_pvc_ensure = True
+c.KubeSpawner.storage_class = 'standard'
+c.KubeSpawner.storage_access_modes = ['ReadWriteOnce']
+c.KubeSpawner.storage_capacity = '200Mi'
+
+# Add volumes to singleuser pods
+c.KubeSpawner.volumes = [
+    {
+        'name': volume_name_template,
+        'persistentVolumeClaim': {
+            'claimName': pvc_name_template
+        }
+    }
+]
+c.KubeSpawner.volume_mounts = [
+    {
+        'mountPath': '/home/jovyan',
+        'name': volume_name_template
+    }
+]
+
 # # Gives spawned containers access to the API of the hub
 c.JupyterHub.hub_connect_ip = os.environ['HUB_SERVICE_HOST']
 c.JupyterHub.hub_connect_port = int(os.environ['HUB_SERVICE_PORT'])
