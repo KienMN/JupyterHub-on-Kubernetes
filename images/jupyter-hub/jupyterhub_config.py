@@ -152,6 +152,7 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 #     c.KubeSpawner.image = image
 
 c.KubeSpawner.image = "jupyter/pyspark-notebook:latest"
+# 
 
 c.KubeSpawner.service_account = "hub"
 
@@ -204,6 +205,14 @@ c.KubeSpawner.service_account = "hub"
 #             effect='NoSchedule',
 #         )
 #     )
+c.KubeSpawner.tolerations.append(
+    dict(
+        key='project',
+        operator='Equal',
+        value='makabaka',
+        effect='NoExecute',
+    )
+)
 
 # # Configure dynamically provisioning pvc
 # storage_type = get_config('singleuser.storage.type')
@@ -256,9 +265,9 @@ c.KubeSpawner.pvc_name_template = pvc_name_template
 volume_name_template = 'volume-{username}'
 
 c.KubeSpawner.storage_pvc_ensure = True
-c.KubeSpawner.storage_class = 'standard'
+c.KubeSpawner.storage_class = 'local-dynamic'
 c.KubeSpawner.storage_access_modes = ['ReadWriteOnce']
-c.KubeSpawner.storage_capacity = '200Mi'
+c.KubeSpawner.storage_capacity = '1Gi'
 
 # Add volumes to singleuser pods
 c.KubeSpawner.volumes = [
@@ -452,6 +461,15 @@ c.DummyAuthenticator.password = "some_password"
 #     if api_token:
 #         service['api_token'] = api_token
 #     c.JupyterHub.services.append(service)
+
+c.JupyterHub.services = [
+    {
+        "name": "admin",
+        "api_token": "4f4149bced8268566ba0e0c96461a0841e3bd23d6d5d96aacbf85fe08f7eeabb",
+        "admin": True,
+    },
+]
+c.JupyterHub.allow_named_servers = True
 
 
 # set_config_if_not_none(c.Spawner, 'cmd', 'singleuser.cmd')

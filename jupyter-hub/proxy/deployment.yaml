@@ -30,6 +30,11 @@ spec:
   #      {{- .Values.proxy.annotations | toYaml | trimSuffix "\n" | nindent 8 }}
   #      {{- end }}
     spec:
+      tolerations:
+      - key: "project"
+        operator: "Equal"
+        value: "makabaka"
+        effect: "NoExecute"
       containers:
         - name: chp
           image: jupyterhub/configurable-http-proxy:4.2.1
@@ -49,7 +54,7 @@ spec:
             allowPrivilegeEscalation: false
           env:
             - name: CONFIGPROXY_AUTH_TOKEN
-              value: "f7a5ba56603e8f4e4f1a1eb85b551b9e70ff863f76cb5f56e72aa23f84e31b5c"
+              value: "4f4149bced8268566ba0e0c96461a0841e3bd23d6d5d96aacbf85fe08f7eeabb"
           # {{- with .Values.proxy.chp.image.pullPolicy }}
           # imagePullPolicy: {{ . }}
           # {{- end }}

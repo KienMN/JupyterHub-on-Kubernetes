@@ -14,18 +14,23 @@ spec:
       labels:
         component: jupyter
     spec:
+      tolerations:
+      - key: "project"
+        operator: "Equal"
+        value: "makabaka"
+        effect: "NoExecute"
       serviceAccountName: hub
       containers:
         - name: jupyter-hub
           #image: kienmn97/jupyter-hub:1.1.0
-          image: kienmn97/jupyter-hub-spark-notebook:1.1.0
+          image: registry.sensetime.com/xlab/jupyterhub:v0.1.6
           imagePullPolicy: Always
           command: ["jupyterhub", "--config", "/srv/jupyterhub/jupyterhub_config.py"]
           ports:
             - containerPort: 8081
           env:
             - name: CONFIGPROXY_AUTH_TOKEN
-              value: "f7a5ba56603e8f4e4f1a1eb85b551b9e70ff863f76cb5f56e72aa23f84e31b5c"
+              value: "4f4149bced8268566ba0e0c96461a0841e3bd23d6d5d96aacbf85fe08f7eeabb"
           volumeMounts:
             # - mountPath: /srv/jupyterhub/jupyterhub_config.py
             #   subPath: jupyterhub_config.py
